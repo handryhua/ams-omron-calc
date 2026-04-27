@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Adv Math Sales - Omron Pro | Production Grade</title>
+<style>
+* {
+  box-sizing: border-box;
+  font-family: system-ui, 'Segoe UI', 'Inter', -apple-system, sans-serif;
+}
+body {
+  background: linear-gradient(160deg, #0f3d5e, #1e6fa8);
+  margin: 0;
+  padding: 0 0 80px 0;
+  min-height: 100vh;
+}
+.app-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 28px 28px 0 0;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+}
+.top-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: white;
+  padding: 6px 16px;
+  border-bottom: 1px solid #e2edf5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 40px;
+}
+.title h1 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+.title p {
+  margin: 0;
+  font-size: 0.55rem;
+  color: #1e5cb3;
+}
+#resetBtn {
+  background: #ff6b6b;
+  color: white;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 30px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.search-wrap {
+  position: sticky;
+  top: 40px;
+  z-index: 29;
+  background: white;
+  padding: 0 16px;
+  border-bottom: 1px solid #ecf3f9;
+  height: 40px;
+  display: flex;
+  align-items: center;
+}
+#searchBox {
+  width: 100%;
+  padding: 6px 12px;
+  border-radius: 40px;
+  border: 1px solid #cbdae9;
+  font-size: 0.7rem;
+}
+.customer-area {
+  position: sticky;
+  top: 80px;
+  z-index: 28;
+  background: white;
+  padding: 0 16px;
+  border-bottom: 1px solid #ecf3f9;
+  height: 40px;
+  display: flex;
+  align-items: center;
+}
+.customer-field {
+  position: relative;
+  width: 100%;
+}
+#customerInput {
+  width: 100%;
+  padding: 6px 12px;
+  border-radius: 40px;
+  border: 1px solid #cbdae9;
+  font-size: 0.7rem;
+  background: white;
+}
+.customer-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #cbdae9;
+  border-radius: 12px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 50;
+  display: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.customer-dropdown.show {
+  display: block;
+}
+.cust-option {
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 0.7rem;
+  border-bottom: 1px solid #ecf3f9;
+}
+.table-wrapper {
+  margin: 0 12px 16px 12px;
+  border-radius: 16px;
+  border: 1px solid #ecf3f9;
+  background: white;
+  overflow-x: auto;
+}
+.table-header {
+  display: grid;
+  grid-template-columns: 2.2fr 1.4fr 1.2fr;
+  padding: 8px 12px;
+  background: #f3f7fb;
+  border-bottom: 1px solid #e2edf5;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #5b7f9e;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  align-items: center;
+}
+.mode-switch-final {
+  display: flex;
+  background: linear-gradient(145deg, #dbeafe, #e2e8f0);
+  border-radius: 40px;
+  padding: 2px;
+  gap: 2px;
+  width: auto;
+}
+.mode-btn {
+  flex: 1;
+  text-align: center;
+  padding: 3px 10px;
+  border-radius: 40px;
+  font-weight: 700;
+  font-size: 0.6rem;
+  cursor: pointer;
+  background: transparent;
+  color: #1e293b;
+  transition: all 0.25s ease;
+  opacity: 0.4;
+  transform: scale(0.98);
+}
+.mode-btn small {
+  display: block;
+  font-size: 0.45rem;
+  font-weight: 500;
+}
+.mode-btn.active {
+  opacity: 1;
+  transform: scale(1);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.mode-btn.active[data-mode="PACKAGE"] {
+  background: linear-gradient(145deg, #ef4444, #dc2626);
+  color: white;
+}
+.mode-btn.active[data-mode="GRADING"] {
+  background: linear-gradient(145deg, #3b82f6, #2563eb);
+  color: white;
+}
+.product-list {
+  display: flex;
+  flex-direction: column;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.product-list.switching {
+  opacity: 0;
+  transform: translateY(6px);
+}
+.product-row {
+  display: grid;
+  grid-template-columns: 2.2fr 1.4fr 1.2fr;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 12px;
+  border-bottom: 1px solid #ecf1f7;
+}
+.product-row:nth-child(even) {
+  background: #f8fbff;
+}
+.product-row:hover {
+  background: #eef6ff;
+}
+.product-row.row-active {
+  background: linear-gradient(90deg, #e6f7ff, #f0f9ff);
+  border-left: 3px solid #3b82f6;
+}
+.col-product {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.product-category {
+  font-size: 0.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.product-name {
+  font-weight: 800;
+  color: #0b3954;
+  font-size: 0.72rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.product-sku {
+  font-size: 0.5rem;
+  color: #6f8daf;
+}
+.qty-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.qty-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.bonus-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2px 4px;
+  opacity: 0.85;
+  gap: 4px;
+  width: 100%;
+  transition: opacity 0.2s;
+}
+.bonus-label {
+  font-size: 0.4rem;
+  margin-bottom: 1px;
+  color: #16a34a;
+  font-weight: 600;
+}
+.bonus-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: #f1f5f9;
+  padding: 2px 6px;
+  border-radius: 30px;
+}
+.qty-btn, .bonus-btn {
+  background: white;
+  border: 1px solid #cbdae9;
+  width: 16px;
+  height: 16px;
+  font-size: 0.5rem;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #1e4a76;
+}
+.qty-input, .bonus-input {
+  width: 28px;
+  height: 16px;
+  gap: 2px;
+  text-align: center;
+  padding:  0;
+  border: 1px solid #cbdae9;
+  border-radius: 30px;
+  font-size: 0.6rem;
+  font-weight: 500;
+}
+.note-foc {
+  font-size: 0.48rem;
+  color: #2c6e2c;
+  background: #e6f4ea;
+  padding: 1px 6px;
+  border-radius: 20px;
+  display: inline-block;
+  margin-top: 2px;
+  white-space: nowrap;
+}
+.col-price {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+.price-main {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #0c4e6e;
+}
+.disc-badge {
+  background: #ffe5e5;
+  color: #c92a2a;
+  font-size: 0.45rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 30px;
+}
+.price-striked {
+  text-decoration: line-through;
+  font-size: 0.48rem;
+  color: #8a9cb0;
+}
+.price-note {
+  font-size: 0.48rem;
+  color: #7c98b3;
+}
+/* 🔥 SUMMARY GRADIENT + EQUAL HEIGHT */
+.summary-floating {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255,255,255,0.96);
+  backdrop-filter: blur(10px);
+  border-top: 3px solid;
+  border-image: linear-gradient(90deg, #f97316, #eab308, #22c55e, #06b6d4, #3b82f6, #a855f7) 1;
+  z-index: 999;
+  padding: 6px 16px;
+}
+.summary-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 70px;
+  align-items: stretch;
+  gap: 8px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.sum-item, .cart-area {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  border-radius: 14px;
+  padding: 6px 10px;
+  text-align: center;
+  transition: transform 0.1s ease;
+}
+.sum-item:nth-child(1) {
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  color: white;
+  box-shadow: 0 2px 6px rgba(239,68,68,0.3);
+}
+.sum-item:nth-child(2) {
+  background: linear-gradient(135deg, #22c55e, #15803d);
+  color: white;
+  box-shadow: 0 2px 6px rgba(34,197,94,0.3);
+}
+.cart-area {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+  box-shadow: 0 2px 6px rgba(59,130,246,0.3);
+}
+.sum-item div:first-child, .cart-area div:first-child {
+  font-size: 0.55rem;
+  font-weight: 500;
+  opacity: 0.9;
+}
+.sum-item strong, .cart-area .cart-btn {
+  font-size: 0.85rem;
+  font-weight: 800;
+  display: block;
+  background: none;
+  border: none;
+  color: white;
+}
+.cart-btn {
+  font-size: 1.2rem;
+  cursor: pointer;
+  background: transparent;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+}
+.progress-bar {
+  height: 3px;
+  background: rgba(255,255,255,0.3);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 6px;
+  width: 100%;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f97316, #eab308, #22c55e);
+  width: 0%;
+  transition: 0.2s;
+}
+.package-info {
+  font-size: 0.45rem;
+  margin-top: 4px;
+  opacity: 0.9;
+}
+.cart-menu {
+  position: absolute;
+  bottom: 50px;
+  right: 0;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 120px;
+  z-index: 1000;
+  color: #1e293b;
+}
+.cart-menu button {
+  padding: 6px 12px;
+  border: none;
+  background: white;
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.65rem;
+  color: #1e293b;
+}
+.cart-menu button:hover {
+  background: #f0f0f0;
+}
+@media (max-width: 600px) {
+  .table-header, .product-row {
+    grid-template-columns: 1.6fr 1.4fr 1fr;
+    gap: 6px;
+    padding: 6px 8px;
+  }
+  .product-name { font-size: 0.65rem; }
+  .note-foc { white-space: normal; font-size: 0.45rem; }
+  .summary-container {
+    grid-template-columns: 1fr 1fr 60px;
+    gap: 6px;
+  }
+}
+  #whatsappBtn svg {
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+#whatsappBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+  .voucher-inline {
+  font-size: 0.42rem;
+  opacity: 0.7;
+  
+}
+
+/* Max bonus */
+.note-max {
+  font-size: 0.4rem;
+  opacity: 0.6;
+}
+</style>
+</head>
+<body>
+<div class="app-container">
+  <div class="top-header">
+    <div class="title"><h1><span style="color:#1e5cb3">A</span>dv <span style="color:#1e5cb3">M</span>ath <span style="color:#1e5cb3">S</span>ales</h1><p>Omron Pro | Final</p></div>
+    <button id="resetBtn">Reset</button>
+  </div>
+  <div class="search-wrap"><input type="text" id="searchBox" placeholder="🔍 Cari produk (nama, SKU, kategori)"></div>
+  <div class="customer-area"><div class="customer-field"><input type="text" id="customerInput" placeholder="Customer (ketik atau klik untuk pilih)" autocomplete="off"><div class="customer-dropdown" id="customerDropdown"></div></div></div>
+  <div class="table-wrapper">
+    <div class="table-header">
+      <div class="mode-switch-final" id="modeSwitchFinal">
+        <div class="mode-btn active" data-mode="PACKAGE">Package <small>Min 850K</small></div>
+        <div class="mode-btn" data-mode="GRADING">Grading <small>FOC Bonus</small></div>
+      </div>
+      <div style="text-align: center;">Qty & Bonus</div>
+      <div style="text-align: right;">Harga/unit</div>
+    </div>
+    <div class="product-list" id="productList"></div>
+  </div>
+  
+  <div class="summary-floating">
+    <div class="summary-container">
+      <div class="sum-item">
+        <div>TOTAL HNA</div>
+        <strong id="sumHna">0</strong>
+        <div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="package-info" id="packageInfo"></div>
+      </div>
+      <div class="sum-item">
+        <div>TOTAL FAKTUR</div>
+        <strong id="sumFakturView">0</strong>
+      </div>
+      <div class="cart-area">
+        <button class="cart-btn" id="cartBtn">🛒</button>
+        <div class="cart-menu" id="cartMenu">
+          <button id="copyOrderBtn">📋 Copy Order</button>
+          <button id="printProposalBtn">🖨️ Print DPF</button>
+          <button id="whatsappBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#25D366">
+              <path d="M20.52 3.48A11.92 11.92 0 0012.01 0C5.38 0 .02 5.36.02 11.99c0 2.11.55 4.17 1.59 5.99L0 24l6.18-1.62a11.93 11.93 0 005.83 1.49h.01c6.63 0 11.99-5.36 11.99-11.99 0-3.2-1.25-6.21-3.49-8.4zM12.01 21.8c-1.78 0-3.53-.48-5.06-1.38l-.36-.21-3.67.96.98-3.57-.23-.37a9.77 9.77 0 01-1.5-5.24c0-5.42 4.41-9.83 9.84-9.83 2.63 0 5.1 1.02 6.96 2.88a9.77 9.77 0 012.88 6.96c0 5.43-4.41 9.84-9.84 9.84zm5.45-7.35c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.95 1.17-.17.2-.35.22-.65.07-.3-.15-1.28-.47-2.43-1.5-.9-.8-1.5-1.78-1.68-2.08-.17-.3-.02-.46.13-.6.14-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.6-.92-2.2-.24-.58-.48-.5-.67-.51l-.57-.01c-.2 0-.52.07-.8.37-.27.3-1.05 1.03-1.05 2.52s1.08 2.92 1.23 3.12c.15.2 2.12 3.23 5.14 4.52.72.31 1.28.49 1.72.63.72.23 1.38.2 1.9.12.58-.09 1.77-.72 2.02-1.41.25-.7.25-1.29.17-1.41-.08-.12-.27-.2-.57-.35z"/>
+            </svg>
+            WA
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+// ======================== DATA PRODUK ========================
+const rawProducts = [["NEBU","4682","NEBULIZER NE-C28","NE-C28-C1",619500],["NEBU","D252","NEBULIZER NE-C28 NEW","NE-C28-C1",619500],["BPM","8085","BLOOD PRESSURE MONT HEM 7120","HEM-7120-AP",408000],["BPM","E658","BLOOD PRESSURE MONT HEM-7142T2","HEM-7142T2-AP2",412000],["TENS","B735","PULSE MASSAGER HV-F013","HV-F013-AP4",445493],["BPM","X007","Tensimeter 7194T1FL","HEM-7194T1-FLAP",732955],["NEBU","B292","NEBULIZER NEC 101","NE-C101-AP",429250],["BPM","E670","BLOOD PRESSURE MONT JPN-750","HEM-7157-AP3[JPN750]",702512],["BPM","E250","BLOOD PRESSURE MONT HEM 7156-AP","HEM-7156-AP",577280],["EFT","E297","THERMOMETER MC-341 AP4","MC-341-AP4",59940],["BCM","8091","KARADA SCAN HBF 214","HBF-214-AP",626316],["BCM","6830","BODY FAT MONITOR HBF-375","HBF-375-AP",1641320],["BPM","F461","BLOOD PRESSURE MONT HEM-7180","HEM-7180-AP",395455],["BPM","F462","BLOOD PRESSURE MONT HEM-7183","HEM-7183-AP",413636],["BPM","F463","BLOOD PRESSURE M HEM-7183-C","HEM-7183-CAP",515909],["BPM","X005","Tensimeter 7183L","HEM-7183-LAP",459091],["BPM","B438","BLOOD PRESSURE MONITOR HEM-6232T","HEM-6232T-AP",1108010],["BPM","E457","BLOOD PRESSURE MONT+ECG HEM-7530T","HEM-7530T-AP3",2492440],["BPM","X006","Tensimeter 7183FL","HEM-7193-FLAP",659091],["EFT","8375","EAR THERMOMETER TH-8395","MC-523-AP",452153],["BCM","8504","WEIGHT SCALE HN 289 (HITAM)","HN-289-EBK",227739],["NEBU","X008","Nebulizer NE-U200","NE-U200(NE-U200-AP)",704622],["NEBU","X009","Nebulizer NE-U300","NE-U300-AP",422459],["BPM","F140","BLOOD PRESSURE MONT HEM-7383T1","HEM-7383T1-AP",1230000],["NEBU","7727","NEBULIZER NE-C801","NE-C810-AP",468430],["EFT","F139","THERMOMETER MC-F300","MC-F300-AP",452000],["EFT","E089","THERMOMETER MC-343F","MC-343F-AP4",78220],["EFT","E245","THERMOMETER MC-246 AP4","MC-246-AP4",56880],["BPM","B813","BLOOD PRESSURE MONT HEM 7156AAP","HEM-7156-AAP",685000],["BPM","D239","BLOOD PRESSURE MONT HEM 7156T-A","HEM-7156T-AAP",783000],["BPM","D526","BLOOD PRESSURE MONT HEM 7156T","HEM-7156T-AP",619500],["TENS","X010","Pulse Massager HV-F021","HV-F021-AP",856780],["TENS","X011","Pulse Massager HV-F030","HV-F030-AP",751648],["TENS","X012","Pulse Massager HV-F230","HV-F230-AP",822189],["PARTS","6861","CUFF - S HEM-CS24-BAP","HEM-CS24-AP2",93790],["PARTS","6862","CUFF - M HEM-CR24-BAP","HEM-CR24-AP2",105514],["PARTS","6863","CUFF - L HEM-RML31-BAP","HEM-RML31-AP2",140491],["PARTS","6865","ADAPTOR (BPM)","ADAPTOR (BPM)",98011],["PARTS","6880","PROBE COVER TH839S","PROBE COVER TH839S",119576],["NEBU","B304","NEBULIZER NEU100","NE-U100-AP",2079818],["HOSPITAL","D161","NEBULIZER NE-U780","NE-U780-AP2",8288289],["HOSPITAL","D162","NEBULIZER NE-C900","NE-C900-AP",1243243],["HOSPITAL","D163","BLOOD PRESSURE MONT HEM 907","HEM-907C3",7770270],["HOSPITAL","D165","BLOOD PRESSURE MONT HBP1320","HBP-1320-AP",3108108],["HOSPITAL","D166","BLOOD PRESSURE MONT HBP1120","HBP-1120-AP",1554055],["HOSPITAL","E040","BLOOD PRESSURE MONT HBP9031C","HBP-9031C",27454955],["HOSPITAL","E770","STAND KIT HEM-907","STAND KIT HEM-907",2690600],["PARTS","F275","OMRON MANSET HEM-FL31","HEM-FL31-AP2",187000],["PARTS","X013","PART1","9063677-9",115500],["PARTS","X014","PART2","9956268-9",128960],["PARTS","X015","PART3","9956276-0",31557],["HOSPITAL","X016","Tensimeter 9010","HBP-9010C-AP",16527240],["HOSPITAL","X017","Tensimeter 9030","HBP-9030",26418919],["PARTS","X018","Part4","HHP-CM01-AP",94669],["TENS","X019","Pulse Massager F-021","HV-F021-AP",856781]];
+const allProducts = rawProducts.map(r => ({ category: r[0], sku: r[1], name: r[2], omronName: r[3], price: r[4] }));
+const customersSample = [{code:"11",name:"CIKOKOL, APT",class:"APOTIK"},{code:"32",name:"KENCANA, APT",class:"APOTIK"},{code:"43",name:"MULTATULI, APT",class:"APOTIK"},{code:"47",name:"PERUMNAS, APT",class:"APOTIK"},{code:"61",name:"RATU FARMA MEDIKA, APT",class:"APOTIK"},{code:"74",name:"SANTI MEDICA, APT",class:"APOTIK"},{code:"89",name:"KRAKATAU MEDIKA, PT",class:"RS SWASTA"},{code:"142",name:"GAMA CILEGON, APT",class:"APOTEK CHAIN"},{code:"185",name:"BERSAMA, APT",class:"APOTIK"},{code:"271",name:"PURI BAKTI, APT",class:"APOTIK"},{code:"280",name:"SUGESTI, APT",class:"APOTIK"},{code:"329",name:"MURNI-2, APT",class:"APOTIK"},{code:"345",name:"MELATI MEDIKA SEJAHTERA, PT",class:"RS SWASTA"},{code:"372",name:"MELATI (BSD), APT",class:"APOTIK"},{code:"428",name:"LABORA FARMA (CILEGON), APT",class:"APOTIK"},{code:"481",name:"RAMANUJU, APT",class:"APOTIK"},{code:"965",name:"SEHAT, APT (CILEGON)",class:"APOTIK"},{code:"1269",name:"SEHAT, APT.",class:"APOTIK"},{code:"1391",name:"GEREM MEDIKA, APT",class:"APOTIK"},{code:"1863",name:"DUTA SEHAT, APT",class:"APOTIK"}];
+const customers = customersSample;
+const packageDisc = {"4682":12.5,"D252":12.5,"8085":16.6,"E658":16.6,"B735":14,"X007":14,"B292":10,"E670":10,"E250":9,"E297":9,"8091":16.6,"6830":11,"F461":10,"F462":10,"F463":10,"X005":10,"B438":9,"E457":9,"X006":9,"8375":7,"8504":6.25,"X008":6.25,"X009":6.25,"F140":6,"7727":5,"F139":5,"E089":4.76,"E245":4.76,"B813":9,"D239":9,"D526":9,"X010":0,"X011":0,"X012":0};
+const packageSkuSet = new Set(Object.keys(packageDisc));
+const gradingRules = {"4682":{ omron:0, dist:3, min:21, free:3, step:7 },"D252":{ omron:0, dist:3, min:21, free:3, step:7 },"8085":{ omron:2, dist:3, min:10, free:2, step:5 },"E658":{ omron:0, dist:3, min:10, free:2, step:5 },"B735":{ omron:0, dist:3, min:12, free:2, step:6 },"X007":{ omron:2, dist:3, min:12, free:2, step:6 },"B292":{ omron:0, dist:3, min:18, free:2, step:9 },"E670":{ omron:0, dist:3, min:18, free:2, step:9 },"E250":{ omron:0, dist:3, min:20, free:2, step:10 },"E297":{ omron:0, dist:0, min:20, free:2, step:10 },"8091":{ omron:0, dist:3, min:5, free:1, step:5 },"6830":{ omron:2, dist:3, min:8, free:1, step:8 },"F461":{ omron:0, dist:3, min:9, free:1, step:9 },"F462":{ omron:0, dist:3, min:9, free:1, step:9 },"F463":{ omron:2, dist:3, min:9, free:1, step:9 },"X005":{ omron:2, dist:3, min:9, free:1, step:9 },"B438":{ omron:0, dist:3, min:10, free:1, step:10 },"E457":{ omron:0, dist:0, min:10, free:1, step:10 },"X006":{ omron:1, dist:3, min:10, free:1, step:10 },"8375":{ omron:0, dist:3, min:13, free:1, step:13 },"8504":{ omron:2, dist:3, min:15, free:1, step:15 },"X008":{ omron:0, dist:0, min:15, free:1, step:15 },"X009":{ omron:2, dist:3, min:15, free:1, step:15 },"F140":{ omron:0, dist:3, min:15, free:1, step:15 },"7727":{ omron:0, dist:3, min:17, free:1, step:17 },"F139":{ omron:0, dist:3, min:17, free:1, step:17 },"E089":{ omron:0, dist:0, min:20, free:1, step:20 },"E245":{ omron:0, dist:3, min:20, free:1, step:20 },"B813":{ omron:0, dist:0, min:1 },"D239":{ omron:0, dist:0, min:1 },"D526":{ omron:0, dist:0, min:1 },"X010":{ omron:0, dist:0, min:1 },"X011":{ omron:0, dist:3, min:1 },"X012":{ omron:0, dist:3, min:1 },"6861":{ omron:0, dist:3, min:1 },"6862":{ omron:0, dist:3, min:1 },"6863":{ omron:0, dist:3, min:1 },"6865":{ omron:0, dist:0, min:1 },"6880":{ omron:0, dist:3, min:1 },"B304":{ omron:0, dist:3, min:1 },"D161":{ omron:0, dist:3, min:1 },"D162":{ omron:0, dist:3, min:2 },"D163":{ omron:5, dist:3, min:2 },"D165":{ omron:5, dist:3, min:2 },"D166":{ omron:5, dist:3, min:2 },"E040":{ omron:5, dist:3, min:2 },"E770":{ omron:0, dist:3, min:1 },"F275":{ omron:0, dist:3, min:1 },"X013":{ omron:0, dist:3, min:1 },"X014":{ omron:0, dist:3, min:1 },"X015":{ omron:0, dist:3, min:1 },"X016":{ omron:5, dist:3, min:2 },"X017":{ omron:5, dist:3, min:2 },"X018":{ omron:0, dist:3, min:1 },"X019":{ omron:0, dist:3, min:1 }};
+
+// ======================== STATE ========================
+let currentMode = "PACKAGE";
+let qtyPkg = {}, qtyGrd = {}, bonusManualGrading = {};
+let packageBonusManual = 0;
+let voucherActive = false;
+let searchText = "";
+const fmt = new Intl.NumberFormat('id-ID');
+const formatNumber = (val) => fmt.format(val);
+const formatRupiah = (val) => `Rp ${fmt.format(val)}`;
+const escapeHtml = (str) => String(str).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]);
+
+allProducts.forEach(p => { qtyPkg[p.sku]=0; qtyGrd[p.sku]=0; bonusManualGrading[p.sku]=0; });
+
+function getQty(sku) { return currentMode === "PACKAGE" ? (qtyPkg[sku]||0) : (qtyGrd[sku]||0); }
+function setQty(sku, val) {
+  val = Math.max(0, val);
+  if (currentMode === "PACKAGE") qtyPkg[sku] = val;
+  else { qtyGrd[sku] = val; const maxBonus = getGradingMaxBonus(sku, val); if (bonusManualGrading[sku] > maxBonus) bonusManualGrading[sku] = maxBonus; }
+}
+function getPackageDiscount(sku, subtotal) { return (currentMode === "PACKAGE" && subtotal >= 850000 && packageDisc[sku]) ? packageDisc[sku] : 0; }
+function getGradingMaxBonus(sku, qty) { const r = gradingRules[sku]; if (!r || r.free === undefined || qty < r.min) return 0; return r.free + Math.floor((qty - r.min) / r.step); }
+function getGradingBonus(sku) { if (currentMode !== "GRADING") return 0; const maxB = getGradingMaxBonus(sku, getQty(sku)); return Math.min(bonusManualGrading[sku] || 0, maxB); }
+function setGradingBonus(sku, val) { const maxB = getGradingMaxBonus(sku, getQty(sku)); bonusManualGrading[sku] = Math.min(Math.max(0, val), maxB); }
+function getPackageBonus() { if (currentMode !== "PACKAGE") return 0; const maxBonus = Math.floor(computeTotals().subtotal / 850000); return Math.min(packageBonusManual, maxBonus); }
+function setPackageBonus(val) { const maxB = Math.floor(computeTotals().subtotal / 850000); packageBonusManual = Math.min(Math.max(0, val), maxB); }
+function getDiscountPercent(sku, qty, subtotal) {
+  if (currentMode === "PACKAGE") return getPackageDiscount(sku, subtotal);
+  const rule = gradingRules[sku]; if (!rule) return 0;
+  return (qty < rule.min) ? (rule.dist||0) : ((rule.omron||0)+(rule.dist||0));
+}
+function computeTotals() {
+  let subtotalRaw = 0;
+  for (let p of allProducts) subtotalRaw += p.price * getQty(p.sku);
+  let totalDisc = 0;
+  for (let p of allProducts) {
+    let q = getQty(p.sku);
+    let discPct = getDiscountPercent(p.sku, q, subtotalRaw);
+    totalDisc += p.price * q * (discPct / 100);
+  }
+  let afterDisc = subtotalRaw - totalDisc;
+  let ppn = afterDisc * 0.11;
+  let grand = afterDisc + ppn;
+  return { subtotal: subtotalRaw, totalDisc, afterDisc, ppn, grand, packageMaxBonus: Math.floor(subtotalRaw / 850000) };
+}
+
+function renderPriceCell(prod, qty, discPercent, bonusQty) {
+  if (qty === 0) return `<div class="col-price"><div class="price-main">${formatNumber(prod.price)}</div><div class="price-note">HNA</div></div>`;
+  const effectiveQty = qty + bonusQty;
+  const finalAfterDisc = prod.price * (1 - discPercent/100);
+  const finalWithPPN = finalAfterDisc * 1.11;
+  const totalLine = finalWithPPN * qty;
+  const finalPerUnit = totalLine / (effectiveQty || 1);
+  let strike = discPercent > 0 ? `<div class="price-striked">${formatNumber(prod.price*1.11)}</div>` : '';
+  let discBadge = discPercent > 0 ? `<div class="disc-badge">Disc ${discPercent}%</div>` : '';
+  return `<div class="col-price"><div class="price-main">${formatNumber(finalPerUnit)}</div>${strike}${discBadge}<div class="price-note">Final (PPN11%)</div></div>`;
+}
+
+function getDisplayProducts() {
+  let source = currentMode === "PACKAGE" ? allProducts.filter(p => packageSkuSet.has(p.sku)) : [...allProducts];
+  let filtered = source.filter(p => p.omronName.toLowerCase().includes(searchText) || p.sku.toLowerCase().includes(searchText) || p.category.toLowerCase().includes(searchText));
+  if (currentMode === "GRADING") {
+    return filtered.sort((a,b) => {
+      let qa = getQty(a.sku);
+      let qb = getQty(b.sku);
+      if (qb !== qa) return qb - qa;
+      if (a.category !== b.category) return a.category.localeCompare(b.category);
+      return a.omronName.localeCompare(b.omronName);
+    });
+  } else {
+    const totals = computeTotals();
+    return filtered.sort((a,b) => {
+      let ba = (a.sku === "E245" && totals.packageMaxBonus > 0) ? 1 : 0;
+      let bb = (b.sku === "E245" && totals.packageMaxBonus > 0) ? 1 : 0;
+      if (bb !== ba) return bb - ba;
+      let qa = getQty(a.sku), qb = getQty(b.sku);
+      if (qb !== qa) return qb - qa;
+      return a.omronName.localeCompare(b.omronName);
+    });
+  }
+}
+
+function resetSearchAndRender() {
+  searchText = "";
+  const searchBox = document.getElementById('searchBox');
+  if (searchBox) searchBox.value = "";
+  renderList();
+}
+
+function renderList() {
+  const container = document.getElementById('productList');
+  container.innerHTML = '';
+  const totals = computeTotals();
+  const items = getDisplayProducts();
+  for (let prod of items) {
+    let qty = getQty(prod.sku);
+    let disc = getDiscountPercent(prod.sku, qty, totals.subtotal);
+    let bonusQty = 0, bonusHtml = '', noteHtml = '';
+    if (currentMode === "GRADING") {
+      const rule = gradingRules[prod.sku];
+      if (rule && rule.free !== undefined) {
+        const maxBonus = getGradingMaxBonus(prod.sku, qty);
+        const currentBonus = getGradingBonus(prod.sku);
+        bonusQty = currentBonus;
+        if (qty >= rule.min) {
+          bonusHtml = `<div class="bonus-wrapper"><div class="bonus-label">🎁 Bonus</div><div class="bonus-control"><button class="bonus-btn minus-grading" data-sku="${prod.sku}" data-delta="-1">−</button><input type="number" class="bonus-input grading-input" data-sku="${prod.sku}" value="${currentBonus}" min="0" max="${maxBonus}" step="1"><button class="bonus-btn plus-grading" data-sku="${prod.sku}" data-delta="1">+</button></div></div>`;
+          let ratio = `${rule.step}+1`;
+          noteHtml = `<span class="note-foc">🎁 ${ratio}</span>`;
+        } else {
+          const sisa = rule.min - qty;
+          noteHtml = `<span class="note-foc">➕ +${sisa} → ${rule.min}+${rule.free}</span>`;
+        }
+      }
+    } else {
+      if (prod.sku === "E245") {
+        const maxBonus = totals.packageMaxBonus;
+        const currentBonus = getPackageBonus();
+        bonusQty = currentBonus;
+        if (maxBonus > 0) {
+          const dimStyle = voucherActive ? 'opacity:0.4;' : '';
+          bonusHtml = `<div class="bonus-wrapper" style="${dimStyle}">
+              <div class="bonus-label">🎁 Bonus MC246</div>
+              <div class="bonus-control">
+                <button class="bonus-btn minus-package" data-delta="-1">−</button>
+                <input type="number" class="bonus-input package-input" value="${currentBonus}" min="0" max="${maxBonus}" step="1">
+                <button class="bonus-btn plus-package" data-delta="1">+</button>
+              </div>
+              <label style="font-size:0.45rem; margin-top:2px;">
+                <input type="checkbox" class="voucher-inline" ${voucherActive ? 'checked' : ''}> Voucher Nusantara
+              </label>
+            </div>`;
+          noteHtml = `<span class="note-foc">🎁 Max ${maxBonus} MC246</span>`;
+        } else {
+          noteHtml = `<span class="note-foc">🔹 Min belanja 850K</span>`;
+        }
+      }
+    }
+    const priceHtml = renderPriceCell(prod, qty, disc, bonusQty);
+    container.insertAdjacentHTML('beforeend', `<div class="product-row ${qty>0 ? 'row-active' : ''}">
+      <div class="col-product"><div class="product-category" style="color:${ {BPM:"#2563eb",NEBU:"#16a34a",EFT:"#f59e0b",BCM:"#7c3aed",TENS:"#db2777",PARTS:"#64748b",HOSPITAL:"#dc2626"}[prod.category]||'#1e5cb3'}">${escapeHtml(prod.category)}</div><div class="product-name" title="${escapeHtml(prod.omronName)}">${escapeHtml(prod.omronName)}</div><div class="product-sku">SKU: ${prod.sku}</div></div>
+      <div class="qty-stack"><div class="qty-control"><button class="qty-btn minus-qty" data-sku="${prod.sku}" data-delta="-1">−</button><input type="number" class="qty-input" data-sku="${prod.sku}" value="${qty}" min="0" step="1"><button class="qty-btn plus-qty" data-sku="${prod.sku}" data-delta="1">+</button></div>${bonusHtml}${noteHtml}</div>
+      ${priceHtml}
+    </div>`);
+  }
+  // attach events
+  document.querySelectorAll('.minus-qty, .plus-qty').forEach(btn => { btn.onclick = (e) => { let sku = e.currentTarget.dataset.sku, delta = parseInt(e.currentTarget.dataset.delta); setQty(sku, getQty(sku)+delta); resetSearchAndRender(); }; });
+  document.querySelectorAll('.qty-input').forEach(inp => { inp.onchange = (e) => { let sku = e.currentTarget.dataset.sku, val = parseInt(e.currentTarget.value); setQty(sku, isNaN(val)?0:val); resetSearchAndRender(); }; });
+  document.querySelectorAll('.minus-grading, .plus-grading').forEach(btn => { btn.onclick = (e) => { let sku = e.currentTarget.dataset.sku, delta = parseInt(e.currentTarget.dataset.delta); setGradingBonus(sku, getGradingBonus(sku)+delta); resetSearchAndRender(); }; });
+  document.querySelectorAll('.grading-input').forEach(inp => { inp.onchange = (e) => { let sku = e.currentTarget.dataset.sku, val = parseInt(e.currentTarget.value); setGradingBonus(sku, val); resetSearchAndRender(); }; });
+  document.querySelectorAll('.minus-package, .plus-package').forEach(btn => { btn.onclick = (e) => { let delta = parseInt(e.currentTarget.dataset.delta); setPackageBonus(getPackageBonus()+delta); resetSearchAndRender(); }; });
+  document.querySelectorAll('.package-input').forEach(inp => { inp.onchange = (e) => { let val = parseInt(e.currentTarget.value); setPackageBonus(val); resetSearchAndRender(); }; });
+  document.querySelectorAll('.voucher-inline').forEach(cb => { cb.onchange = (e) => { voucherActive = e.target.checked; resetSearchAndRender(); }; });
+  // update summary
+  const progressBarDiv = document.getElementById('progressBar');
+  const packageInfoDiv = document.getElementById('packageInfo');
+  if (currentMode === "PACKAGE") {
+    progressBarDiv.style.display = "block";
+    packageInfoDiv.style.display = "block";
+    const progress = totals.subtotal % 850000;
+    document.getElementById('progressFill').style.width = `${(progress / 850000) * 100}%`;
+    packageInfoDiv.innerText = `${Math.floor(totals.subtotal / 850000)} Package • sisa ${formatNumber(850000 - progress)}`;
+  } else {
+    progressBarDiv.style.display = "none";
+    packageInfoDiv.style.display = "none";
+  }
+  document.getElementById('sumHna').innerText = formatNumber(totals.subtotal);
+  document.getElementById('sumFakturView').innerText = formatNumber(totals.grand);
+}
+
+// Customer dropdown
+const custInput = document.getElementById('customerInput');
+const dropCust = document.getElementById('customerDropdown');
+function filterCustByMode() { let allowed = currentMode === "PACKAGE" ? ["APOTIK","APOTEK CHAIN"] : null; if (!allowed) return customers; return customers.filter(c => allowed.includes(c.class)); }
+function showCustDropdown() { let list = filterCustByMode().slice(0, 30); if (!list.length) return; dropCust.innerHTML = list.map(c => `<div class="cust-option" data-val="${c.code}|${c.name}">${c.name} - ${c.code}</div>`).join(''); dropCust.classList.add('show'); document.querySelectorAll('.cust-option').forEach(opt => opt.addEventListener('click', () => { let [code,name] = opt.dataset.val.split('|'); custInput.value = `${name} - ${code}`; dropCust.classList.remove('show'); })); }
+custInput.addEventListener('focus', showCustDropdown); custInput.addEventListener('input', showCustDropdown);
+document.addEventListener('click', (e) => { if (!custInput.contains(e.target) && !dropCust.contains(e.target)) dropCust.classList.remove('show'); });
+
+// Mode switch
+document.querySelectorAll('.mode-btn').forEach(btn => { btn.addEventListener('click', () => { let mode = btn.dataset.mode; if (mode === currentMode) return; document.getElementById('productList').classList.add('switching'); setTimeout(() => { currentMode = mode; document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); resetSearchAndRender(); document.getElementById('productList').classList.remove('switching'); }, 180); }); });
+document.getElementById('searchBox').addEventListener('input', e => { searchText = e.target.value.toLowerCase(); renderList(); });
+document.getElementById('resetBtn').onclick = () => { if(confirm("Reset semua data?")) { allProducts.forEach(p => { qtyPkg[p.sku]=0; qtyGrd[p.sku]=0; bonusManualGrading[p.sku]=0; }); packageBonusManual=0; voucherActive=false; resetSearchAndRender(); } };
+
+// Copy & WA
+function generateCopyText() {
+  let customer = custInput.value.trim() || "-";
+  let totals = computeTotals();
+  let text = `Mohon diajukan\n${customer}\n─────────────────\n`;
+  for (let p of allProducts) {
+    let qty = getQty(p.sku); if (qty === 0) continue;
+    let bonus = 0;
+    if (currentMode === "GRADING") bonus = getGradingBonus(p.sku);
+    else if (p.sku === "E245") bonus = getPackageBonus();
+    let discOmron = 0, discDist = 0;
+    if (currentMode === "GRADING") {
+      let rule = gradingRules[p.sku];
+      if (rule && qty >= rule.min) { discOmron = rule.omron || 0; discDist = rule.dist || 0; }
+      else if (rule) discDist = rule.dist || 0;
+    } else {
+      discOmron = getPackageDiscount(p.sku, totals.subtotal);
+    }
+    text += `${p.omronName} (${p.sku})\n${qty} unit${bonus>0 ? ` + Bonus ${bonus}` : ""}\n`;
+    if (currentMode === "PACKAGE") text += `Disc HO ${discOmron}%\n`;
+    else text += `Disc Omron ${discOmron}% + Disc Dist ${discDist}%\n`;
+    text += `\n`;
+  }
+  if (currentMode === "PACKAGE") {
+    let pkgBonus = getPackageBonus();
+    if (pkgBonus > 0) text += `🎁 Bonus MC246: ${pkgBonus} unit\n`;
+    if (voucherActive) text += `Ref. Bonus Voucher Nusantara\n`;
+  }
+  text += `Total HNA: ${formatRupiah(totals.subtotal)}\nTotal Faktur: ${formatRupiah(totals.grand)}`;
+  return text;
+}
+document.getElementById('copyOrderBtn').onclick = () => { navigator.clipboard.writeText(generateCopyText()).then(()=>alert('✅ Order tersalin')); };
+document.getElementById('whatsappBtn').onclick = () => { window.open(`https://wa.me/?text=${encodeURIComponent(generateCopyText())}`); };
+
+// 🔥 PRINT DPF - HEADER MENYATU DENGAN TABEL (FIX)
+document.getElementById('printProposalBtn').onclick = () => {
+  const totals = computeTotals();
+  let rows = '';
+  for (let p of allProducts) {
+    let qty = getQty(p.sku); if (qty === 0) continue;
+    let disc = getDiscountPercent(p.sku, qty, totals.subtotal);
+    let discOmron = 0, discDist = 0;
+    if (currentMode === "GRADING") {
+      let rule = gradingRules[p.sku];
+      if (rule && qty >= rule.min) { discOmron = rule.omron || 0; discDist = rule.dist || 0; }
+      else if (rule) discDist = rule.dist || 0;
+    } else {
+      discOmron = disc;
+    }
+    let bonus = '';
+    if (currentMode === "PACKAGE" && p.sku === "E245") { let b = getPackageBonus(); if(b>0) bonus = `${b} MC246`; }
+    else if (currentMode === "GRADING") { let b = getGradingBonus(p.sku); if(b>0) bonus = `${b} unit`; }
+    rows += `<tr>
+      <td>${escapeHtml(p.sku)}</td>
+      <td>${escapeHtml(p.omronName)}</td>
+      <td style="text-align:center">${qty}</td>
+      <td style="text-align:right">${fmt.format(p.price)}</td>
+      ${currentMode === "PACKAGE" ? `<td style="text-align:center">${discOmron}%</td>` : `<td style="text-align:center">${discOmron}%</td><td style="text-align:center">${discDist}%</td>`}
+      <td style="text-align:center">${bonus || '-'}</td>
+    </tr>`;
+  }
+  const date = new Date().toLocaleDateString('id-ID');
+  const customer = escapeHtml(custInput.value.trim() || '-');
+  const colSpan = currentMode === "PACKAGE" ? 5 : 6;
+  const win = window.open('', '_blank', 'width=1100,height=850');
+  win.document.write(`<!DOCTYPE html><html><head><title>DPF - Omron</title><style>
+    body{font-family:'Times New Roman',Arial;font-size:11pt;margin:1cm;}
+    table{width:100%;border-collapse:collapse;margin:10px 0;}
+    th,td{border:1px solid #000;padding:5px;} th{background:#f0f0f0;}
+    .footer-table{width:70%;margin-top:20px;} .sign{display:flex;justify-content:space-between;margin-top:40px;}
+    .total-row td{border-top:2px solid #000; font-weight:bold;}
+  </style></head><body>
+  <h3>DISCOUNT PROPOSAL FORM</h3>
+  <table>
+    <thead>
+      <!-- BARIS HEADER INFO (menyatu dalam tabel) -->
+      <tr>
+        <td colspan="${colSpan+1}" style="border:none; padding-bottom:10px;">
+          <div style="display:flex; justify-content:space-between;">
+            <div>
+              No Dpf : ___________<br>
+              Cabang : ___________<br>
+              Tanggal Pengusulan : ${date}<br>
+              Nama Outlet : ${customer}<br>
+              Alamat : ___________<br>
+              Contact Person : ___________
+            </div>
+            <div style="text-align:left;">
+              UP : ___________<br>
+              CC : ___________<br>
+              Cabang : ___________<br>
+              Kode Outlet : ___________
+            </div>
+          </div>
+        </td>
+      </tr>
+      <!-- BARIS HEADER KOLOM -->
+      <tr>
+        <th>SKU</th>
+        <th>NAMA PRODUCT</th>
+        <th>QTY</th>
+        <th>HNA</th>
+        ${currentMode === "PACKAGE" ? '<th>DISC HO</th>' : '<th>% OMRON</th><th>% DISTRIBUTOR</th>'}
+        <th>BONUS</th>
+      </tr>
+    </thead>
+    <tbody>${rows}</tbody>
+    <tr class="total-row">
+      <td colspan="${colSpan}" style="text-align:right; border-top:2px solid #000;"><b>TOTAL HNA</b></td>
+      <td style="text-align:right; border-top:2px solid #000;"><b>${formatRupiah(totals.subtotal)}</b></td>
+    </tr>
+  </table>
+  <table class="footer-table">
+    <tr><td>SHARE DISCOUNT AMS</td><td style="text-align:right">___________</td></tr>
+    <tr><td>SHARE DISCOUNT PRINCIPAL</td><td style="text-align:right">___________</td></tr>
+    <tr><td>SHARE DISCOUNT AMS HO</td><td style="text-align:right">___________</td></tr>
+    <tr><td>TOTAL DISCOUNT</td><td style="text-align:right">___________</td></tr>
+    <tr><td>LAIN-LAIN (BONUS)</td><td style="text-align:right">${(currentMode==="PACKAGE"?getPackageBonus():'')}</td></tr>
+    <tr><td><b>TOTAL</b></td><td style="text-align:right"><b>${formatRupiah(totals.subtotal)}</b></td></tr>
+  </table>
+  <div class="sign">
+    <div>Yang Mengajukan,<br><br><br><br><br><br><br><br><br><br>AMS KACAB &nbsp;&nbsp;&nbsp; PRINCIPAL</div>
+    <div>Menyetujui,<br><br><br><br><br><br><br><br><br><br>AMS HO &nbsp;&nbsp;&nbsp; PRINCIPAL HO</div>
+  </div>
+  </body></html>`);
+  win.document.close(); win.print();
+};
+
+// Cart menu toggle
+const cartBtn = document.getElementById('cartBtn'), cartMenu = document.getElementById('cartMenu');
+cartBtn.onclick = (e) => { e.stopPropagation(); cartMenu.style.display = cartMenu.style.display==='flex'?'none':'flex'; };
+window.addEventListener('click', () => cartMenu.style.display = 'none');
+
+renderList();
+</script>
+</body>
+</html>

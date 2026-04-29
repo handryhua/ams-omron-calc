@@ -1139,6 +1139,11 @@ document.getElementById('printProposalBtn').onclick = () => {
     <div>Yang Mengajukan,<br><br><br><br><br><br><br><br><br><br>AMS KACAB &nbsp;&nbsp;&nbsp; PRINCIPAL</div>
     <div>Menyetujui,<br><br><br><br><br><br><br><br><br><br>AMS HO &nbsp;&nbsp;&nbsp; PRINCIPAL HO</div>
   </div>
+      <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("sw.js");
+    }
+    </script>
   </body></html>`);
   win.document.close(); win.print();
 };

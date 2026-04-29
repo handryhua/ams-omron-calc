@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1e5cb3">
 <html lang="id">
 <head>
-<meta charset="UTF-8">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1e5cb3">
+  <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<title>Adv Math Sales - Omron Pro | Production Grade</title>
+<title>Adv Math Sales - Omron Pro | Final Fix</title>
 <style>
 * {
   box-sizing: border-box;
@@ -250,10 +250,17 @@ body {
   flex-direction: column;
   align-items: center;
   padding: 2px 4px;
-  opacity: 0.85;
   gap: 4px;
   width: 100%;
   transition: opacity 0.2s;
+}
+.bonus-wrapper.disabled-bonus {
+  opacity: 0.6;
+}
+.bonus-wrapper.disabled-bonus .bonus-btn,
+.bonus-wrapper.disabled-bonus .bonus-input {
+  pointer-events: none;
+  background: #e2e8f0;
 }
 .bonus-label {
   font-size: 0.4rem;
@@ -266,37 +273,45 @@ body {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  background: #f1f5f9;
+  background: #eef6ff;
+  border: 1px solid #dbeafe;
   padding: 2px 6px;
   border-radius: 30px;
 }
 .qty-btn, .bonus-btn {
   background: white;
   border: 1px solid #cbdae9;
-  width: 16px;
-  height: 16px;
+  width: 26px;
+  height: 26px;
   font-size: 0.5rem;
   font-weight: bold;
   border-radius: 4px;
   cursor: pointer;
   color: #1e4a76;
 }
+.qty-btn:disabled, .bonus-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 .qty-input, .bonus-input {
-  width: 28px;
-  height: 16px;
-  gap: 2px;
+  width: 34px;
+  height: 20px;
   text-align: center;
-  padding:  0;
+  padding: 0;
   border: 1px solid #cbdae9;
   border-radius: 30px;
   font-size: 0.6rem;
   font-weight: 500;
 }
+.qty-input:disabled, .bonus-input:disabled {
+  background: #f0f0f0;
+  color: #999;
+}
 .note-foc {
-  font-size: 0.48rem;
+  font-size: 0.42rem;
   color: #2c6e2c;
   background: #e6f4ea;
-  padding: 1px 6px;
+  padding: 1px 5px;
   border-radius: 20px;
   display: inline-block;
   margin-top: 2px;
@@ -331,7 +346,6 @@ body {
   font-size: 0.48rem;
   color: #7c98b3;
 }
-/* 🔥 SUMMARY GRADIENT + EQUAL HEIGHT */
 .summary-floating {
   position: fixed;
   bottom: 0;
@@ -418,6 +432,16 @@ body {
   margin-top: 4px;
   opacity: 0.9;
 }
+.bonus-mc246-info {
+  font-size: 0.5rem;
+  background: #e6f4ea;
+  border-radius: 20px;
+  padding: 2px 8px;
+  margin-top: 4px;
+  display: inline-block;
+  color: #166534;
+  font-weight: 600;
+}
 .cart-menu {
   position: absolute;
   bottom: 50px;
@@ -433,16 +457,20 @@ body {
   color: #1e293b;
 }
 .cart-menu button {
-  padding: 6px 12px;
+  padding: 14px 16px;
   border: none;
   background: white;
   text-align: left;
   cursor: pointer;
-  font-size: 0.65rem;
+  font-size: 0.95rem;
+  border-bottom: 1px solid #eee;
+  font-weight: 800;
   color: #1e293b;
 }
-.cart-menu button:hover {
-  background: #f0f0f0;
+  .cart-menu button:last-child {
+  border-bottom: none;
+}
+
 }
 @media (max-width: 600px) {
   .table-header, .product-row {
@@ -457,26 +485,45 @@ body {
     gap: 6px;
   }
 }
-  #whatsappBtn svg {
+#whatsappBtn svg {
   vertical-align: middle;
   margin-right: 4px;
 }
-
 #whatsappBtn {
   display: flex;
   align-items: center;
   gap: 4px;
 }
-  .voucher-inline {
+.voucher-inline {
   font-size: 0.42rem;
   opacity: 0.7;
-  
 }
-
-/* Max bonus */
 .note-max {
   font-size: 0.4rem;
   opacity: 0.6;
+}
+.disabled-bonus {
+  opacity: 0.3;
+  filter: grayscale(1);
+}
+.bonus-wrapper.disabled-bonus {
+  pointer-events: auto;
+}
+  .customer-area {
+    display: flex;
+    gap: 6px;
+  }
+
+  #customerInput {
+    flex: 1;
+  }
+
+  #customerCodeInput {
+    width: 120px;
+  }
+  .row-bonus {
+  background: #ecfdf5;
+  border-left: 3px solid #22c55e;
 }
 </style>
 </head>
@@ -487,7 +534,12 @@ body {
     <button id="resetBtn">Reset</button>
   </div>
   <div class="search-wrap"><input type="text" id="searchBox" placeholder="🔍 Cari produk (nama, SKU, kategori)"></div>
-  <div class="customer-area"><div class="customer-field"><input type="text" id="customerInput" placeholder="Customer (ketik atau klik untuk pilih)" autocomplete="off"><div class="customer-dropdown" id="customerDropdown"></div></div></div>
+  <div class="customer-area" style="gap:6px;">
+    <input type="text" id="customerInput" placeholder="Nama Customer">
+    <input type="text" id="customerCodeInput" placeholder="Kode Customer" style="max-width:120px;">
+
+    <div class="customer-dropdown" id="customerDropdown"></div>
+  </div>
   <div class="table-wrapper">
     <div class="table-header">
       <div class="mode-switch-final" id="modeSwitchFinal">
@@ -507,6 +559,7 @@ body {
         <strong id="sumHna">0</strong>
         <div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
         <div class="package-info" id="packageInfo"></div>
+        <div id="gradingBonusInfo" style="margin-top: 4px;"></div>
       </div>
       <div class="sum-item">
         <div>TOTAL FAKTUR</div>
@@ -530,7 +583,7 @@ body {
 </div>
 <script>
 // ======================== DATA PRODUK ========================
-const rawProducts = [["NEBU","4682","NEBULIZER NE-C28","NE-C28-C1",619500],["NEBU","D252","NEBULIZER NE-C28 NEW","NE-C28-C1",619500],["BPM","8085","BLOOD PRESSURE MONT HEM 7120","HEM-7120-AP",408000],["BPM","E658","BLOOD PRESSURE MONT HEM-7142T2","HEM-7142T2-AP2",412000],["TENS","B735","PULSE MASSAGER HV-F013","HV-F013-AP4",445493],["BPM","X007","Tensimeter 7194T1FL","HEM-7194T1-FLAP",732955],["NEBU","B292","NEBULIZER NEC 101","NE-C101-AP",429250],["BPM","E670","BLOOD PRESSURE MONT JPN-750","HEM-7157-AP3[JPN750]",702512],["BPM","E250","BLOOD PRESSURE MONT HEM 7156-AP","HEM-7156-AP",577280],["EFT","E297","THERMOMETER MC-341 AP4","MC-341-AP4",59940],["BCM","8091","KARADA SCAN HBF 214","HBF-214-AP",626316],["BCM","6830","BODY FAT MONITOR HBF-375","HBF-375-AP",1641320],["BPM","F461","BLOOD PRESSURE MONT HEM-7180","HEM-7180-AP",395455],["BPM","F462","BLOOD PRESSURE MONT HEM-7183","HEM-7183-AP",413636],["BPM","F463","BLOOD PRESSURE M HEM-7183-C","HEM-7183-CAP",515909],["BPM","X005","Tensimeter 7183L","HEM-7183-LAP",459091],["BPM","B438","BLOOD PRESSURE MONITOR HEM-6232T","HEM-6232T-AP",1108010],["BPM","E457","BLOOD PRESSURE MONT+ECG HEM-7530T","HEM-7530T-AP3",2492440],["BPM","X006","Tensimeter 7183FL","HEM-7193-FLAP",659091],["EFT","8375","EAR THERMOMETER TH-8395","MC-523-AP",452153],["BCM","8504","WEIGHT SCALE HN 289 (HITAM)","HN-289-EBK",227739],["NEBU","X008","Nebulizer NE-U200","NE-U200(NE-U200-AP)",704622],["NEBU","X009","Nebulizer NE-U300","NE-U300-AP",422459],["BPM","F140","BLOOD PRESSURE MONT HEM-7383T1","HEM-7383T1-AP",1230000],["NEBU","7727","NEBULIZER NE-C801","NE-C810-AP",468430],["EFT","F139","THERMOMETER MC-F300","MC-F300-AP",452000],["EFT","E089","THERMOMETER MC-343F","MC-343F-AP4",78220],["EFT","E245","THERMOMETER MC-246 AP4","MC-246-AP4",56880],["BPM","B813","BLOOD PRESSURE MONT HEM 7156AAP","HEM-7156-AAP",685000],["BPM","D239","BLOOD PRESSURE MONT HEM 7156T-A","HEM-7156T-AAP",783000],["BPM","D526","BLOOD PRESSURE MONT HEM 7156T","HEM-7156T-AP",619500],["TENS","X010","Pulse Massager HV-F021","HV-F021-AP",856780],["TENS","X011","Pulse Massager HV-F030","HV-F030-AP",751648],["TENS","X012","Pulse Massager HV-F230","HV-F230-AP",822189],["PARTS","6861","CUFF - S HEM-CS24-BAP","HEM-CS24-AP2",93790],["PARTS","6862","CUFF - M HEM-CR24-BAP","HEM-CR24-AP2",105514],["PARTS","6863","CUFF - L HEM-RML31-BAP","HEM-RML31-AP2",140491],["PARTS","6865","ADAPTOR (BPM)","ADAPTOR (BPM)",98011],["PARTS","6880","PROBE COVER TH839S","PROBE COVER TH839S",119576],["NEBU","B304","NEBULIZER NEU100","NE-U100-AP",2079818],["HOSPITAL","D161","NEBULIZER NE-U780","NE-U780-AP2",8288289],["HOSPITAL","D162","NEBULIZER NE-C900","NE-C900-AP",1243243],["HOSPITAL","D163","BLOOD PRESSURE MONT HEM 907","HEM-907C3",7770270],["HOSPITAL","D165","BLOOD PRESSURE MONT HBP1320","HBP-1320-AP",3108108],["HOSPITAL","D166","BLOOD PRESSURE MONT HBP1120","HBP-1120-AP",1554055],["HOSPITAL","E040","BLOOD PRESSURE MONT HBP9031C","HBP-9031C",27454955],["HOSPITAL","E770","STAND KIT HEM-907","STAND KIT HEM-907",2690600],["PARTS","F275","OMRON MANSET HEM-FL31","HEM-FL31-AP2",187000],["PARTS","X013","PART1","9063677-9",115500],["PARTS","X014","PART2","9956268-9",128960],["PARTS","X015","PART3","9956276-0",31557],["HOSPITAL","X016","Tensimeter 9010","HBP-9010C-AP",16527240],["HOSPITAL","X017","Tensimeter 9030","HBP-9030",26418919],["PARTS","X018","Part4","HHP-CM01-AP",94669],["TENS","X019","Pulse Massager F-021","HV-F021-AP",856781]];
+const rawProducts = [["NEBU","4682","NEBULIZER NE-C28","NE-C28-C1",619500],["NEBU","D252","NEBULIZER NE-C28 NEW","NE-C28-C1",619500],["BPM","8085","BLOOD PRESSURE MONT HEM 7120","HEM-7120-AP",408000],["BPM","E658","BLOOD PRESSURE MONT HEM-7142T2","HEM-7142T2-AP2",412000],["TENS","B735","PULSE MASSAGER HV-F013","HV-F013-AP4",445493],["BPM","X007","Tensimeter 7194T1FL","HEM-7194T1-FLAP",732955],["NEBU","B292","NEBULIZER NEC 101","NE-C101-AP",429250],["BPM","E670","BLOOD PRESSURE MONT JPN-750","HEM-7157-AP3[JPN750]",702512],["BPM","E250","BLOOD PRESSURE MONT HEM 7156-AP","HEM-7156-AP",577280],["EFT","E297","THERMOMETER MC-341 AP4","MC-341-AP4",59940],["BCM","8091","KARADA SCAN HBF 214","HBF-214-AP",626316],["BCM","6830","BODY FAT MONITOR HBF-375","HBF-375-AP",1641320],["BPM","F461","BLOOD PRESSURE MONT HEM-7180","HEM-7180-AP",395455],["BPM","F462","BLOOD PRESSURE MONT HEM-7183","HEM-7183-AP",413636],["BPM","F463","BLOOD PRESSURE M HEM-7183-C","HEM-7183-CAP",515909],["BPM","X005","Tensimeter 7183L","HEM-7183-LAP",459091],["BPM","B438","BLOOD PRESSURE MONITOR HEM-6232T","HEM-6232T-AP",1081336],["BPM","E457","BLOOD PRESSURE MONT+ECG HEM-7530T","HEM-7530T-AP3",2492440],["BPM","X006","Tensimeter 7183FL","HEM-7193-FLAP",659091],["EFT","8375","EAR THERMOMETER TH-8395","MC-523-AP",452153],["BCM","8504","WEIGHT SCALE HN 289 (HITAM)","HN-289-EBK",227739],["NEBU","X008","Nebulizer NE-U200","NE-U200(NE-U200-AP)",704622],["NEBU","X009","Nebulizer NE-U300","NE-U300-AP",422459],["BPM","F140","BLOOD PRESSURE MONT HEM-7383T1","HEM-7383T1-AP",1230000],["NEBU","7727","NEBULIZER NE-C801","NE-C810-AP",468500],["EFT","F139","THERMOMETER MC-F300","MC-F300-AP",452000],["EFT","E089","THERMOMETER MC-343F","MC-343F-AP4",78220],["EFT","E245","THERMOMETER MC-246 AP4","MC-246-AP4",56880],["BPM","B813","BLOOD PRESSURE MONT HEM 7156AAP","HEM-7156-AAP",685000],["BPM","D239","BLOOD PRESSURE MONT HEM 7156T-A","HEM-7156T-AAP",783000],["BPM","D526","BLOOD PRESSURE MONT HEM 7156T","HEM-7156T-AP",619500],["TENS","X010","Pulse Massager HV-F021","HV-F021-AP",856780],["TENS","X011","Pulse Massager HV-F030","HV-F030-AP",751648],["TENS","X012","Pulse Massager HV-F230","HV-F230-AP",822189],["PARTS","6861","CUFF - S HEM-CS24-BAP","HEM-CS24-AP2",97100],["PARTS","6862","CUFF - M HEM-CR24-BAP","HEM-CR24-AP2",109238],["PARTS","6863","CUFF - L HEM-RML31-BAP","HEM-RML31-AP2",145449],["PARTS","6865","ADAPTOR (BPM)","ADAPTOR (BPM)",98011],["PARTS","6880","PROBE COVER TH839S","PROBE COVER TH839S",119576],["NEBU","B304","NEBULIZER NEU100","NE-U100-AP",2079818],["HOSPITAL","D161","NEBULIZER NE-U780","NE-U780-AP2",8288000],["HOSPITAL","D162","NEBULIZER NE-C900","NE-C900-AP",1243200],["HOSPITAL","D163","BLOOD PRESSURE MONT HEM 907","HEM-907C3",7770000],["HOSPITAL","D165","BLOOD PRESSURE MONT HBP1320","HBP-1320-AP",3108000],["HOSPITAL","D166","BLOOD PRESSURE MONT HBP1120","HBP-1120-AP",1554000],["HOSPITAL","E040","BLOOD PRESSURE MONT HBP9031C","HBP-9031C",27454000],["HOSPITAL","E770","STAND KIT HEM-907","STAND KIT HEM-907",2690600],["PARTS","F275","OMRON MANSET HEM-FL31","HEM-FL31-AP2",189700],["PARTS","X013","PART1","9063677-9",115500],["PARTS","X014","PART2","9956268-9",128960],["PARTS","X015","PART3","9956276-0",31557],["HOSPITAL","X016","Tensimeter 9010","HBP-9010C-AP",16527240],["HOSPITAL","X017","Tensimeter 9030","HBP-9030",26418919],["PARTS","X018","Part4","HHP-CM01-AP",94669],["TENS","X019","Pulse Massager F-021","HV-F021-AP",856781]];
 const allProducts = rawProducts.map(r => ({ category: r[0], sku: r[1], name: r[2], omronName: r[3], price: r[4] }));
 const customersSample = [{code:"11",name:"CIKOKOL, APT",class:"APOTIK"},{code:"32",name:"KENCANA, APT",class:"APOTIK"},{code:"43",name:"MULTATULI, APT",class:"APOTIK"},{code:"47",name:"PERUMNAS, APT",class:"APOTIK"},{code:"61",name:"RATU FARMA MEDIKA, APT",class:"APOTIK"},{code:"74",name:"SANTI MEDICA, APT",class:"APOTIK"},{code:"89",name:"KRAKATAU MEDIKA, PT",class:"RS SWASTA"},{code:"142",name:"GAMA CILEGON, APT",class:"APOTEK CHAIN"},{code:"185",name:"BERSAMA, APT",class:"APOTIK"},{code:"271",name:"PURI BAKTI, APT",class:"APOTIK"},{code:"280",name:"SUGESTI, APT",class:"APOTIK"},{code:"329",name:"MURNI-2, APT",class:"APOTIK"},{code:"345",name:"MELATI MEDIKA SEJAHTERA, PT",class:"RS SWASTA"},{code:"372",name:"MELATI (BSD), APT",class:"APOTIK"},{code:"428",name:"LABORA FARMA (CILEGON), APT",class:"APOTIK"},{code:"481",name:"RAMANUJU, APT",class:"APOTIK"},{code:"965",name:"SEHAT, APT (CILEGON)",class:"APOTIK"},{code:"1269",name:"SEHAT, APT.",class:"APOTIK"},{code:"1391",name:"GEREM MEDIKA, APT",class:"APOTIK"},{code:"1863",name:"DUTA SEHAT, APT",class:"APOTIK"}];
 const customers = customersSample;
@@ -541,8 +594,10 @@ const gradingRules = {"4682":{ omron:0, dist:3, min:21, free:3, step:7 },"D252":
 // ======================== STATE ========================
 let currentMode = "PACKAGE";
 let qtyPkg = {}, qtyGrd = {}, bonusManualGrading = {};
-let packageBonusManual = 0;
+let packageBonusManual = 0;     // untuk PACKAGE mode
+let gradingMc246Bonus = 0;      // untuk GRADING mode
 let voucherActive = false;
+let customerUnlocked = false;
 let searchText = "";
 const fmt = new Intl.NumberFormat('id-ID');
 const formatNumber = (val) => fmt.format(val);
@@ -550,6 +605,35 @@ const formatRupiah = (val) => `Rp ${fmt.format(val)}`;
 const escapeHtml = (str) => String(str).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]);
 
 allProducts.forEach(p => { qtyPkg[p.sku]=0; qtyGrd[p.sku]=0; bonusManualGrading[p.sku]=0; });
+
+// Fungsi global bonus MC246 - jika voucher aktif, return 0
+function getMC246Bonus() {
+  if (voucherActive) return 0;
+
+  // ❗ HANYA BERLAKU DI PACKAGE
+  if (currentMode !== "PACKAGE") return 0;
+
+  const totals = computeTotals();
+  const maxBonus = Math.floor(totals.subtotal / 850000);
+  return Math.min(packageBonusManual, maxBonus);
+}
+
+function setMC246Bonus(val) {
+  if (voucherActive) {
+    // tidak boleh diubah saat voucher aktif
+    if (currentMode === "PACKAGE") packageBonusManual = 0;
+    else gradingMc246Bonus = 0;
+    return;
+  }
+  const totals = computeTotals();
+  const maxBonus = Math.floor(totals.subtotal / 850000);
+  const newVal = Math.min(Math.max(0, val), maxBonus);
+  if (currentMode === "PACKAGE") {
+    packageBonusManual = newVal;
+  } else {
+    gradingMc246Bonus = newVal;
+  }
+}
 
 function getQty(sku) { return currentMode === "PACKAGE" ? (qtyPkg[sku]||0) : (qtyGrd[sku]||0); }
 function setQty(sku, val) {
@@ -561,8 +645,6 @@ function getPackageDiscount(sku, subtotal) { return (currentMode === "PACKAGE" &
 function getGradingMaxBonus(sku, qty) { const r = gradingRules[sku]; if (!r || r.free === undefined || qty < r.min) return 0; return r.free + Math.floor((qty - r.min) / r.step); }
 function getGradingBonus(sku) { if (currentMode !== "GRADING") return 0; const maxB = getGradingMaxBonus(sku, getQty(sku)); return Math.min(bonusManualGrading[sku] || 0, maxB); }
 function setGradingBonus(sku, val) { const maxB = getGradingMaxBonus(sku, getQty(sku)); bonusManualGrading[sku] = Math.min(Math.max(0, val), maxB); }
-function getPackageBonus() { if (currentMode !== "PACKAGE") return 0; const maxBonus = Math.floor(computeTotals().subtotal / 850000); return Math.min(packageBonusManual, maxBonus); }
-function setPackageBonus(val) { const maxB = Math.floor(computeTotals().subtotal / 850000); packageBonusManual = Math.min(Math.max(0, val), maxB); }
 function getDiscountPercent(sku, qty, subtotal) {
   if (currentMode === "PACKAGE") return getPackageDiscount(sku, subtotal);
   const rule = gradingRules[sku]; if (!rule) return 0;
@@ -583,16 +665,46 @@ function computeTotals() {
   return { subtotal: subtotalRaw, totalDisc, afterDisc, ppn, grand, packageMaxBonus: Math.floor(subtotalRaw / 850000) };
 }
 
-function renderPriceCell(prod, qty, discPercent, bonusQty) {
-  if (qty === 0) return `<div class="col-price"><div class="price-main">${formatNumber(prod.price)}</div><div class="price-note">HNA</div></div>`;
-  const effectiveQty = qty + bonusQty;
+function renderPriceCell(prod, qty, discPercent, bonusFromMc246) {
+
+  // 🔴 CASE 1: pure bonus (TIDAK BOLEH ADA HARGA)
+  if (qty === 0 && bonusFromMc246 > 0) {
+    return `<div class="col-price">
+      <div class="price-note">Bonus Only</div>
+    </div>`;
+  }
+
+  // default (belum input apa2)
+  if (qty === 0 && bonusFromMc246 === 0) {
+    return `<div class="col-price">
+      <div class="price-main">${formatNumber(prod.price)}</div>
+      <div class="price-note">HNA</div>
+    </div>`;
+  }
+
+  // ✅ CASE NORMAL (qty ada)
+  const effectiveQty = qty + bonusFromMc246;
+
   const finalAfterDisc = prod.price * (1 - discPercent/100);
   const finalWithPPN = finalAfterDisc * 1.11;
+
   const totalLine = finalWithPPN * qty;
-  const finalPerUnit = totalLine / (effectiveQty || 1);
-  let strike = discPercent > 0 ? `<div class="price-striked">${formatNumber(prod.price*1.11)}</div>` : '';
-  let discBadge = discPercent > 0 ? `<div class="disc-badge">Disc ${discPercent}%</div>` : '';
-  return `<div class="col-price"><div class="price-main">${formatNumber(finalPerUnit)}</div>${strike}${discBadge}<div class="price-note">Final (PPN11%)</div></div>`;
+  const finalPerUnit = effectiveQty > 0 ? totalLine / effectiveQty : 0;
+
+  let strike = discPercent > 0
+    ? `<div class="price-striked">${formatNumber(prod.price*1.11)}</div>`
+    : '';
+
+  let discBadge = discPercent > 0
+    ? `<div class="disc-badge">Disc ${discPercent}%</div>`
+    : '';
+
+  return `<div class="col-price">
+    <div class="price-main">${formatNumber(finalPerUnit)}</div>
+    ${strike}
+    ${discBadge}
+    <div class="price-note">Final (PPN11%)</div>
+  </div>`;
 }
 
 function getDisplayProducts() {
@@ -630,11 +742,19 @@ function renderList() {
   const container = document.getElementById('productList');
   container.innerHTML = '';
   const totals = computeTotals();
+  const mc246Bonus = getMC246Bonus(); // nilai bonus global (0 jika voucher aktif)
   const items = getDisplayProducts();
+  // auto reset voucher kalau bukan PACKAGE
+  if (currentMode !== "PACKAGE" && voucherActive) {
+    voucherActive = false;
+  }
   for (let prod of items) {
     let qty = getQty(prod.sku);
     let disc = getDiscountPercent(prod.sku, qty, totals.subtotal);
-    let bonusQty = 0, bonusHtml = '', noteHtml = '';
+    let bonusQty = 0;
+    let bonusHtml = '', noteHtml = '';
+    
+    // Bonus khusus FOC per SKU (hanya untuk grading)
     if (currentMode === "GRADING") {
       const rule = gradingRules[prod.sku];
       if (rule && rule.free !== undefined) {
@@ -642,7 +762,14 @@ function renderList() {
         const currentBonus = getGradingBonus(prod.sku);
         bonusQty = currentBonus;
         if (qty >= rule.min) {
-          bonusHtml = `<div class="bonus-wrapper"><div class="bonus-label">🎁 Bonus</div><div class="bonus-control"><button class="bonus-btn minus-grading" data-sku="${prod.sku}" data-delta="-1">−</button><input type="number" class="bonus-input grading-input" data-sku="${prod.sku}" value="${currentBonus}" min="0" max="${maxBonus}" step="1"><button class="bonus-btn plus-grading" data-sku="${prod.sku}" data-delta="1">+</button></div></div>`;
+          bonusHtml = `
+          <div class="bonus-wrapper">
+          <div class="bonus-label">🎁 Bonus SKU</div>
+          <div class="bonus-control">
+          <button class="bonus-btn minus-grading" data-sku="${prod.sku}" data-delta="-1">−</button>
+          <input type="number" class="bonus-input grading-input" data-sku="${prod.sku}" value="${currentBonus}" min="0" max="${maxBonus}" step="1">
+          <button class="bonus-btn plus-grading" data-sku="${prod.sku}" data-delta="1">+</button>
+          </div></div>`;
           let ratio = `${rule.step}+1`;
           noteHtml = `<span class="note-foc">🎁 ${ratio}</span>`;
         } else {
@@ -651,56 +778,112 @@ function renderList() {
         }
       }
     } else {
+      // Mode PACKAGE: Tampilkan kontrol bonus MC246 hanya untuk produk E245
       if (prod.sku === "E245") {
         const maxBonus = totals.packageMaxBonus;
-        const currentBonus = getPackageBonus();
+        const currentBonus = mc246Bonus;
         bonusQty = currentBonus;
+        const disabledAttr = voucherActive ? 'disabled' : '';
+        const wrapperClass = voucherActive ? 'bonus-wrapper disabled-bonus' : 'bonus-wrapper';
         if (maxBonus > 0) {
-          const dimStyle = voucherActive ? 'opacity:0.4;' : '';
-          bonusHtml = `<div class="bonus-wrapper" style="${dimStyle}">
+          // PERBAIKAN: checkbox dipisah di luar wrapper agar bisa diklik walau disabled
+          bonusHtml = `<div class="${wrapperClass}">
               <div class="bonus-label">🎁 Bonus MC246</div>
               <div class="bonus-control">
-                <button class="bonus-btn minus-package" data-delta="-1">−</button>
-                <input type="number" class="bonus-input package-input" value="${currentBonus}" min="0" max="${maxBonus}" step="1">
-                <button class="bonus-btn plus-package" data-delta="1">+</button>
+                <button class="bonus-btn minus-package" data-delta="-1" ${disabledAttr}>−</button>
+                <input type="number" class="bonus-input package-input" value="${currentBonus}" min="0" max="${maxBonus}" step="1" ${disabledAttr}>
+                <button class="bonus-btn plus-package" data-delta="1" ${disabledAttr}>+</button>
               </div>
-              <label style="font-size:0.45rem; margin-top:2px;">
-                <input type="checkbox" class="voucher-inline" ${voucherActive ? 'checked' : ''}> Voucher Nusantara
-              </label>
-            </div>`;
-          noteHtml = `<span class="note-foc">🎁 Max ${maxBonus} MC246</span>`;
+              <div class="note-max">🎁 Max ${maxBonus}</div>
+            </div>
+            <label style="
+              display:flex;
+              align-items:center;
+              gap:4px;
+              font-size:0.5rem;
+              margin-top:4px;
+            ">
+              <input type="checkbox" class="voucher-inline" ${voucherActive ? 'checked' : ''}>
+              <span>Voucher Nusantara</span>
+            </label>`;
         } else {
           noteHtml = `<span class="note-foc">🔹 Min belanja 850K</span>`;
         }
       }
     }
+    
     const priceHtml = renderPriceCell(prod, qty, disc, bonusQty);
-    container.insertAdjacentHTML('beforeend', `<div class="product-row ${qty>0 ? 'row-active' : ''}">
+    container.insertAdjacentHTML('beforeend', `<div class="product-row ${qty>0 ? 'row-active' : ''} ${qty===0 && bonusQty>0 ? 'row-bonus' : ''}">
       <div class="col-product"><div class="product-category" style="color:${ {BPM:"#2563eb",NEBU:"#16a34a",EFT:"#f59e0b",BCM:"#7c3aed",TENS:"#db2777",PARTS:"#64748b",HOSPITAL:"#dc2626"}[prod.category]||'#1e5cb3'}">${escapeHtml(prod.category)}</div><div class="product-name" title="${escapeHtml(prod.omronName)}">${escapeHtml(prod.omronName)}</div><div class="product-sku">SKU: ${prod.sku}</div></div>
       <div class="qty-stack"><div class="qty-control"><button class="qty-btn minus-qty" data-sku="${prod.sku}" data-delta="-1">−</button><input type="number" class="qty-input" data-sku="${prod.sku}" value="${qty}" min="0" step="1"><button class="qty-btn plus-qty" data-sku="${prod.sku}" data-delta="1">+</button></div>${bonusHtml}${noteHtml}</div>
       ${priceHtml}
     </div>`);
   }
-  // attach events
+  
+  // Attach events
   document.querySelectorAll('.minus-qty, .plus-qty').forEach(btn => { btn.onclick = (e) => { let sku = e.currentTarget.dataset.sku, delta = parseInt(e.currentTarget.dataset.delta); setQty(sku, getQty(sku)+delta); resetSearchAndRender(); }; });
-  document.querySelectorAll('.qty-input').forEach(inp => { inp.onchange = (e) => { let sku = e.currentTarget.dataset.sku, val = parseInt(e.currentTarget.value); setQty(sku, isNaN(val)?0:val); resetSearchAndRender(); }; });
-  document.querySelectorAll('.minus-grading, .plus-grading').forEach(btn => { btn.onclick = (e) => { let sku = e.currentTarget.dataset.sku, delta = parseInt(e.currentTarget.dataset.delta); setGradingBonus(sku, getGradingBonus(sku)+delta); resetSearchAndRender(); }; });
-  document.querySelectorAll('.grading-input').forEach(inp => { inp.onchange = (e) => { let sku = e.currentTarget.dataset.sku, val = parseInt(e.currentTarget.value); setGradingBonus(sku, val); resetSearchAndRender(); }; });
-  document.querySelectorAll('.minus-package, .plus-package').forEach(btn => { btn.onclick = (e) => { let delta = parseInt(e.currentTarget.dataset.delta); setPackageBonus(getPackageBonus()+delta); resetSearchAndRender(); }; });
-  document.querySelectorAll('.package-input').forEach(inp => { inp.onchange = (e) => { let val = parseInt(e.currentTarget.value); setPackageBonus(val); resetSearchAndRender(); }; });
-  document.querySelectorAll('.voucher-inline').forEach(cb => { cb.onchange = (e) => { voucherActive = e.target.checked; resetSearchAndRender(); }; });
-  // update summary
+  
+  document.querySelectorAll('.qty-input').forEach(inp => {
+
+    inp.onfocus = (e) => {
+      if (e.target.value === "0") e.target.value = "";
+    };
+
+    inp.oninput = (e) => {
+      if (e.target.value === "") return;
+      if (parseInt(e.target.value) < 0) e.target.value = 0;
+    };
+
+    inp.onchange = (e) => {
+      let sku = e.currentTarget.dataset.sku;
+      let val = parseInt(e.currentTarget.value);
+      setQty(sku, isNaN(val)?0:val);
+      resetSearchAndRender();
+    };
+
+});
+  document.querySelectorAll('.minus-grading, .plus-grading').forEach(btn => { btn.onclick = (e) => { let sku = e.currentTarget.dataset.sku, delta = parseInt(e.currentTarget.dataset.delta); setGradingBonus(sku, getGradingBonus(sku)+delta); renderList(); }; });
+  document.querySelectorAll('.grading-input').forEach(inp => { inp.onchange = (e) => { let sku = e.currentTarget.dataset.sku, val = parseInt(e.currentTarget.value); setGradingBonus(sku, val); renderList(); }; });
+  
+  // Event untuk package mode bonus MC246 (hanya jika tidak disabled) dan checkbox
+  document.querySelectorAll('.minus-package').forEach(btn => { btn.onclick = (e) => { if (!voucherActive) { setMC246Bonus(getMC246Bonus()-1); renderList(); } }; });
+  document.querySelectorAll('.plus-package').forEach(btn => { btn.onclick = (e) => { if (!voucherActive) { setMC246Bonus(getMC246Bonus()+1); renderList(); } }; });
+  document.querySelectorAll('.package-input').forEach(inp => { inp.onchange = (e) => { if (!voucherActive) { let val = parseInt(e.currentTarget.value); setMC246Bonus(val); renderList(); } }; });
+  
+  // Event handler untuk voucher (checkbox sudah dipisah dari wrapper, selalu bisa diklik)
+  document.querySelectorAll('.voucher-inline').forEach(cb => {
+    // Hapus listener lama untuk menghindari duplikasi
+    cb.removeEventListener('change', cb._listener);
+    const handler = (e) => {
+      if (currentMode !== "PACKAGE") {
+        e.target.checked = false;
+        return;
+      }
+      voucherActive = e.target.checked;
+      if (voucherActive) {
+        packageBonusManual = 0;
+      }
+      renderList();
+    };
+    cb.addEventListener('change', handler);
+    cb._listener = handler;
+  });
+ 
+  // update summary & progress bar
   const progressBarDiv = document.getElementById('progressBar');
   const packageInfoDiv = document.getElementById('packageInfo');
+  const gradingBonusInfoDiv = document.getElementById('gradingBonusInfo');
   if (currentMode === "PACKAGE") {
     progressBarDiv.style.display = "block";
     packageInfoDiv.style.display = "block";
+    gradingBonusInfoDiv.innerHTML = '';
     const progress = totals.subtotal % 850000;
     document.getElementById('progressFill').style.width = `${(progress / 850000) * 100}%`;
-    packageInfoDiv.innerText = `${Math.floor(totals.subtotal / 850000)} Package • sisa ${formatNumber(850000 - progress)}`;
+    packageInfoDiv.innerText = `${Math.floor(totals.subtotal / 850000)} Package • tambah ${formatNumber(850000 - progress)}`;
   } else {
     progressBarDiv.style.display = "none";
     packageInfoDiv.style.display = "none";
+    gradingBonusInfoDiv.innerHTML = '';
   }
   document.getElementById('sumHna').innerText = formatNumber(totals.subtotal);
   document.getElementById('sumFakturView').innerText = formatNumber(totals.grand);
@@ -708,27 +891,70 @@ function renderList() {
 
 // Customer dropdown
 const custInput = document.getElementById('customerInput');
+  custInput.addEventListener('input', (e) => {
+  const val = e.target.value.toLowerCase();
+
+  // 🔐 KODE RAHASIA (bebas kamu ganti)
+  if (val.includes("ams")) {
+    customerUnlocked = true;
+    alert("🔓 Customer unlocked");
+    showCustDropdown();
+  }
+});
 const dropCust = document.getElementById('customerDropdown');
 function filterCustByMode() { let allowed = currentMode === "PACKAGE" ? ["APOTIK","APOTEK CHAIN"] : null; if (!allowed) return customers; return customers.filter(c => allowed.includes(c.class)); }
-function showCustDropdown() { let list = filterCustByMode().slice(0, 30); if (!list.length) return; dropCust.innerHTML = list.map(c => `<div class="cust-option" data-val="${c.code}|${c.name}">${c.name} - ${c.code}</div>`).join(''); dropCust.classList.add('show'); document.querySelectorAll('.cust-option').forEach(opt => opt.addEventListener('click', () => { let [code,name] = opt.dataset.val.split('|'); custInput.value = `${name} - ${code}`; dropCust.classList.remove('show'); })); }
-custInput.addEventListener('focus', showCustDropdown); custInput.addEventListener('input', showCustDropdown);
-document.addEventListener('click', (e) => { if (!custInput.contains(e.target) && !dropCust.contains(e.target)) dropCust.classList.remove('show'); });
+
+function showCustDropdown() {
+  if (!customerUnlocked) return;
+  let list = filterCustByMode().slice(0, 30);
+  if (!list.length) return;
+
+  dropCust.innerHTML = list.map(c =>
+    `<div class="cust-option" data-code="${c.code}" data-name="${c.name}">
+      ${c.name} - ${c.code}
+    </div>`
+  ).join('');
+
+  dropCust.classList.add('show');
+
+  document.querySelectorAll('.cust-option').forEach(opt =>
+    opt.addEventListener('click', () => {
+
+      const name = opt.dataset.name;
+      const code = opt.dataset.code;
+
+      // ✅ isi masing-masing field
+      document.getElementById('customerInput').value = name;
+      document.getElementById('customerCodeInput').value = code;
+
+      dropCust.classList.remove('show');
+    })
+  );
+}
 
 // Mode switch
-document.querySelectorAll('.mode-btn').forEach(btn => { btn.addEventListener('click', () => { let mode = btn.dataset.mode; if (mode === currentMode) return; document.getElementById('productList').classList.add('switching'); setTimeout(() => { currentMode = mode; document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); resetSearchAndRender(); document.getElementById('productList').classList.remove('switching'); }, 180); }); });
+document.querySelectorAll('.mode-btn').forEach(btn => { btn.addEventListener('click', () => { let mode = btn.dataset.mode; if (mode === currentMode) return; document.getElementById('productList').classList.add('switching'); setTimeout(() => { currentMode = mode; document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); renderList(); document.getElementById('productList').classList.remove('switching'); }, 180); }); });
 document.getElementById('searchBox').addEventListener('input', e => { searchText = e.target.value.toLowerCase(); renderList(); });
-document.getElementById('resetBtn').onclick = () => { if(confirm("Reset semua data?")) { allProducts.forEach(p => { qtyPkg[p.sku]=0; qtyGrd[p.sku]=0; bonusManualGrading[p.sku]=0; }); packageBonusManual=0; voucherActive=false; resetSearchAndRender(); } };
+document.getElementById('resetBtn').onclick = () => { if(confirm("Reset semua data?")) { allProducts.forEach(p => { qtyPkg[p.sku]=0; qtyGrd[p.sku]=0; bonusManualGrading[p.sku]=0; }); packageBonusManual=0; gradingMc246Bonus=0; voucherActive=false; renderList(); } };
 
-// Copy & WA
+// ======================== PERBAIKAN COPY & WA ========================
 function generateCopyText() {
-  let customer = custInput.value.trim() || "-";
+  let custName = document.getElementById('customerInput').value.trim();
+  let custCode = document.getElementById('customerCodeInput').value.trim();
+  let customer = `${custName || '-'} ${custCode ? '('+custCode+')' : ''}`;
   let totals = computeTotals();
   let text = `Mohon diajukan\n${customer}\n─────────────────\n`;
   for (let p of allProducts) {
-    let qty = getQty(p.sku); if (qty === 0) continue;
-    let bonus = 0;
-    if (currentMode === "GRADING") bonus = getGradingBonus(p.sku);
-    else if (p.sku === "E245") bonus = getPackageBonus();
+    let qty = getQty(p.sku);
+    let bonusSku = 0;
+    if (currentMode === "GRADING") {
+      bonusSku = getGradingBonus(p.sku);
+    } else if (p.sku === "E245") {
+      bonusSku = voucherActive ? 0 : getMC246Bonus();
+    }
+    // Filter: hanya tampilkan jika qty > 0 atau bonusSku > 0
+    if (qty === 0 && bonusSku === 0) continue;
+    
     let discOmron = 0, discDist = 0;
     if (currentMode === "GRADING") {
       let rule = gradingRules[p.sku];
@@ -737,15 +963,26 @@ function generateCopyText() {
     } else {
       discOmron = getPackageDiscount(p.sku, totals.subtotal);
     }
-    text += `${p.omronName} (${p.sku})\n${qty} unit${bonus>0 ? ` + Bonus ${bonus}` : ""}\n`;
-    if (currentMode === "PACKAGE") text += `Disc HO ${discOmron}%\n`;
-    else text += `Disc Omron ${discOmron}% + Disc Dist ${discDist}%\n`;
+
+    // PERBAIKAN: handle kasus bonus saja (qty=0, bonus>0)
+    text += `${p.omronName} (${p.sku})\n`;
+    if (qty === 0 && bonusSku > 0) {
+      text += `Bonus ${bonusSku}\n\n`;
+      continue;
+    }
+    // Kasus normal: qty > 0 (bisa dengan atau tanpa bonus)
+    text += `${qty} unit${bonusSku > 0 ? ` + Bonus ${bonusSku}` : ""}\n`;
+    if (qty > 0) {
+      if (currentMode === "PACKAGE") {
+        text += `Disc HO ${discOmron}%\n`;
+      } else {
+        text += `Disc Omron ${discOmron}% + Disc AMS ${discDist}%\n`;
+      }
+    }
     text += `\n`;
   }
-  if (currentMode === "PACKAGE") {
-    let pkgBonus = getPackageBonus();
-    if (pkgBonus > 0) text += `🎁 Bonus MC246: ${pkgBonus} unit\n`;
-    if (voucherActive) text += `Ref. Bonus Voucher Nusantara\n`;
+  if (voucherActive && currentMode === "PACKAGE") {
+    text += `Ref. Voucher Nusantara\n`;
   }
   text += `Total HNA: ${formatRupiah(totals.subtotal)}\nTotal Faktur: ${formatRupiah(totals.grand)}`;
   return text;
@@ -753,12 +990,20 @@ function generateCopyText() {
 document.getElementById('copyOrderBtn').onclick = () => { navigator.clipboard.writeText(generateCopyText()).then(()=>alert('✅ Order tersalin')); };
 document.getElementById('whatsappBtn').onclick = () => { window.open(`https://wa.me/?text=${encodeURIComponent(generateCopyText())}`); };
 
-// 🔥 PRINT DPF - HEADER MENYATU DENGAN TABEL (FIX)
+// ======================== PERBAIKAN PRINT DPF ========================
 document.getElementById('printProposalBtn').onclick = () => {
   const totals = computeTotals();
   let rows = '';
   for (let p of allProducts) {
-    let qty = getQty(p.sku); if (qty === 0) continue;
+    let qty = getQty(p.sku);
+    let bonusSku = 0;
+    if (currentMode === "GRADING") {
+      bonusSku = getGradingBonus(p.sku);
+    } else if (p.sku === "E245") {
+      bonusSku = voucherActive ? 0 : getMC246Bonus();
+    }
+    if (qty === 0 && bonusSku === 0) continue;
+    
     let disc = getDiscountPercent(p.sku, qty, totals.subtotal);
     let discOmron = 0, discDist = 0;
     if (currentMode === "GRADING") {
@@ -768,20 +1013,27 @@ document.getElementById('printProposalBtn').onclick = () => {
     } else {
       discOmron = disc;
     }
-    let bonus = '';
-    if (currentMode === "PACKAGE" && p.sku === "E245") { let b = getPackageBonus(); if(b>0) bonus = `${b} MC246`; }
-    else if (currentMode === "GRADING") { let b = getGradingBonus(p.sku); if(b>0) bonus = `${b} unit`; }
+    let bonusText = bonusSku > 0 ? `${bonusSku} unit` : '-';
+    
+    // PERBAIKAN: tentukan apakah akan menampilkan diskon (hanya jika qty > 0)
+    const showDisc = qty > 0;
+    
     rows += `<tr>
       <td>${escapeHtml(p.sku)}</td>
       <td>${escapeHtml(p.omronName)}</td>
       <td style="text-align:center">${qty}</td>
       <td style="text-align:right">${fmt.format(p.price)}</td>
-      ${currentMode === "PACKAGE" ? `<td style="text-align:center">${discOmron}%</td>` : `<td style="text-align:center">${discOmron}%</td><td style="text-align:center">${discDist}%</td>`}
-      <td style="text-align:center">${bonus || '-'}</td>
+      ${currentMode === "PACKAGE" 
+        ? `<td style="text-align:center">${showDisc ? discOmron + '%' : '-'}</td>` 
+        : `<td style="text-align:center">${showDisc ? discOmron + '%' : '-'}</td><td style="text-align:center">${showDisc ? discDist + '%' : '-'}</td>`}
+      <td style="text-align:center">${bonusText}</td>
     </tr>`;
   }
   const date = new Date().toLocaleDateString('id-ID');
-  const customer = escapeHtml(custInput.value.trim() || '-');
+  const custName = document.getElementById('customerInput').value.trim();
+  const custCode = document.getElementById('customerCodeInput').value.trim();
+
+  const customer = `${custName || '-'}`;
   const colSpan = currentMode === "PACKAGE" ? 5 : 6;
   const win = window.open('', '_blank', 'width=1100,height=850');
   win.document.write(`<!DOCTYPE html><html><head><title>DPF - Omron</title><style>
@@ -794,7 +1046,6 @@ document.getElementById('printProposalBtn').onclick = () => {
   <h3>DISCOUNT PROPOSAL FORM</h3>
   <table>
     <thead>
-      <!-- BARIS HEADER INFO (menyatu dalam tabel) -->
       <tr>
         <td colspan="${colSpan+1}" style="border:none; padding-bottom:10px;">
           <div style="display:flex; justify-content:space-between;">
@@ -810,34 +1061,79 @@ document.getElementById('printProposalBtn').onclick = () => {
               UP : ___________<br>
               CC : ___________<br>
               Cabang : ___________<br>
-              Kode Outlet : ___________
+              Kode Outlet : ${custCode || '___________'}
             </div>
           </div>
         </td>
       </tr>
-      <!-- BARIS HEADER KOLOM -->
       <tr>
         <th>SKU</th>
         <th>NAMA PRODUCT</th>
         <th>QTY</th>
         <th>HNA</th>
-        ${currentMode === "PACKAGE" ? '<th>DISC HO</th>' : '<th>% OMRON</th><th>% DISTRIBUTOR</th>'}
+        ${currentMode === "PACKAGE" ? '<th>DISC HO</th>' : '<th>% OMRON</th><th>% AMS</th>'}
         <th>BONUS</th>
       </tr>
     </thead>
     <tbody>${rows}</tbody>
-    <tr class="total-row">
-      <td colspan="${colSpan}" style="text-align:right; border-top:2px solid #000;"><b>TOTAL HNA</b></td>
-      <td style="text-align:right; border-top:2px solid #000;"><b>${formatRupiah(totals.subtotal)}</b></td>
+    <tr>
+      <td colspan="${colSpan}" style="text-align:left">SHARE DISCOUNT AMS</td>
+      <td style="text-align:right">___________</td>
     </tr>
+    <tr>
+      <td colspan="${colSpan}">SHARE DISCOUNT PRINCIPAL</td>
+      <td style="text-align:right">___________</td>
+    </tr>
+    <tr>
+      <td colspan="${colSpan}">SHARE DISCOUNT AMS HO</td>
+      <td style="text-align:right">___________</td>
+    </tr>
+    <tr>
+      <td colspan="${colSpan}"><b>TOTAL DISCOUNT</b></td>
+      <td style="text-align:right">___________</td>
+    </tr>
+    <tr>
+      <td colspan="${colSpan}">LAIN-LAIN (BONUS)</td>
+      <td style="text-align:right">
+        ${(() => {
+          let mc246InTable = false;
+          for (let p of allProducts) {
+            let qty = getQty(p.sku);
+            let bonus = (p.sku === "E245" && currentMode === "PACKAGE")
+              ? (voucherActive ? 0 : getMC246Bonus())
+              : 0;
+            if (p.sku === "E245" && (qty > 0 || bonus > 0)) {
+              mc246InTable = true;
+              break;
+            }
+          }
+          if (mc246InTable) return '-';
+          if (voucherActive) return '-';
+          const bonus = getMC246Bonus();
+          return bonus > 0 ? `${bonus} MC246` : '-';
+        })()}
+       </td>
+    </tr>
+    <tr class="total-row">
+      <td colspan="${colSpan}"><b>TOTAL</b></td>
+      <td style="text-align:right"><b>${formatRupiah(totals.subtotal)}</b></td>
+    </tr>
+    ${currentMode === "PACKAGE" && Math.floor(totals.subtotal / 850000) > 0 ? `
+    <tr>
+      <td colspan="${colSpan}" style="text-align:left"><b>KETERANGAN</b></td>
+      <td style="text-align:right">
+        ${Math.floor(totals.subtotal / 850000)} Package
+      </td>
+    </tr>
+` : ''}
+    ${voucherActive && currentMode === "PACKAGE" ? `
+    <tr>
+      <td colspan="${colSpan}" style="text-align:left"><b>KETERANGAN</b></td>
+      <td style="text-align:right">Ref. Voucher Nusantara</td>
+    </tr>
+    ` : ''}
   </table>
   <table class="footer-table">
-    <tr><td>SHARE DISCOUNT AMS</td><td style="text-align:right">___________</td></tr>
-    <tr><td>SHARE DISCOUNT PRINCIPAL</td><td style="text-align:right">___________</td></tr>
-    <tr><td>SHARE DISCOUNT AMS HO</td><td style="text-align:right">___________</td></tr>
-    <tr><td>TOTAL DISCOUNT</td><td style="text-align:right">___________</td></tr>
-    <tr><td>LAIN-LAIN (BONUS)</td><td style="text-align:right">${(currentMode==="PACKAGE"?getPackageBonus():'')}</td></tr>
-    <tr><td><b>TOTAL</b></td><td style="text-align:right"><b>${formatRupiah(totals.subtotal)}</b></td></tr>
   </table>
   <div class="sign">
     <div>Yang Mengajukan,<br><br><br><br><br><br><br><br><br><br>AMS KACAB &nbsp;&nbsp;&nbsp; PRINCIPAL</div>

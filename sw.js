@@ -1,10 +1,10 @@
 const CACHE_NAME = "omron-app-v1";
 const urlsToCache = [
-  "./",
-  "./index.html",
-  "./manifest.json",
-  "./icon-192.png",
-  "./icon-512.png"
+  "/ams-omron-calc/",
+  "/ams-omron-calc/index.html",
+  "/ams-omron-calc/manifest.json",
+  "/ams-omron-calc/icon-192.png",
+  "/ams-omron-calc/icon-512.png"
 ];
 
 self.addEventListener("install", e => {

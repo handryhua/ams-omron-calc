@@ -4,7 +4,7 @@
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#1e5cb3">
   <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Adv Math Sales - Omron Pro | Final Fix</title>
 <style>
 * {
@@ -1140,10 +1140,10 @@ document.getElementById('printProposalBtn').onclick = () => {
     <div>Menyetujui,<br><br><br><br><br><br><br><br><br><br>AMS HO &nbsp;&nbsp;&nbsp; PRINCIPAL HO</div>
   </div>
       <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("sw.js");
-    }
-    </script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./sw.js");
+}
+</script>
   </body></html>`);
   win.document.close(); win.print();
 };
